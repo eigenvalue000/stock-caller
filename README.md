@@ -22,8 +22,8 @@ to sec-api.io to get the most current positions from the hedge
 fund's form 13-f and also gets the positions from the previous
 accounting period, usually quarterly. The application will
 calculate the changes in positions for each stock in the hedge fund's
-portfolio and will display the top five largest positions from the
-previous accounting period and display how much they have changed in
+portfolio, will display the top five largest positions from the
+previous accounting period, and display how much they have changed in
 position. Both of these objects, which are owned by the user, will be
 displayed in a template using handlebars.js.
   
