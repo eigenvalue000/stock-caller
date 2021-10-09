@@ -1,0 +1,16 @@
+<div id="portfolioTitle">Cryptocurrency Watchlist</div>
+<div id="portfolio">
+    {{#each dbCryptoDataFinal}}
+    <div id="stockContainer">
+        <div id="stockSymbol">
+            {{this.dataValues.symbol}}
+
+            {{this.dataValues.price}}
+        </div>
+    </div>
+    {{/each}}
+</div>
+
+<form action="/crypto" method="get">
+    <button>Refresh Cryptocurrency Prices</button>
+</form>

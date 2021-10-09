@@ -1,0 +1,30 @@
+[
+    {
+        "name": "Berkshire Hathaway Inc.",
+        "symbol": "",
+        "note": "Warren E. Buffett, CEO",
+        "cik": "1067983",
+        "currentPostionsTotal": 0,
+        "currentDate": "",
+        "currentTime": "",
+        "pastPositionsTotal": 0,
+        "pastDate": "",
+        "pastTime": "",
+        "changeInPositions": 0,
+        "direction": ""
+    },
+    {
+        "name": "Bridgewater Associates, LP",
+        "symbol": "",
+        "note": "Ray Dalio, Co-Chairman/Co-CIO",
+        "cik": "1350694",
+        "currentPostionsTotal": 0,
+        "currentDate": "",
+        "currentTime": "",
+        "pastPositionsTotal": 0,
+        "pastDate": "",
+        "pastTime": "",
+        "changeInPositions": 0,
+        "direction": ""
+    }
+]

@@ -1,0 +1,16 @@
+<div id="portfolioTitle">Stock Watchlist</div>
+<div id="portfolio">
+    {{#each dbStockDataFinal}}
+    <div id="stockContainer">
+        <div id="stockSymbol">
+            {{this.dataValues.symbol}}
+
+            {{this.dataValues.price}}
+        </div>
+    </div>
+    {{/each}}
+</div>
+
+<form action="/stock" method="get">
+    <button>Refresh Stock Prices</button>
+</form>

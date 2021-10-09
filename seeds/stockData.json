@@ -1,0 +1,18 @@
+[
+    {
+        "symbol": "AAPL",
+        "price": 52,
+        "note": ""
+      },
+    {
+        "symbol": "MSFT",
+        "price": 52,
+        "note": ""
+    },
+    {
+        "symbol": "GOOGL",
+        "price": 52,
+        "note": ""
+    }
+    
+]

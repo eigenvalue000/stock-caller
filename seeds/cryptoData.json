@@ -1,0 +1,13 @@
+[
+    {
+        "symbol": "BTC",
+        "price": 1000,
+        "note": ""
+    },
+    {
+        "symbol": "ETH",
+        "price": 1000,
+        "note": ""
+    }
+
+]

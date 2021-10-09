@@ -1,0 +1,26 @@
+<div id="portfolioTitle">Hedge Fund Watchlist</div>
+<div id="portfolio">
+    {{#each fundData}}
+
+    <div id="stockContainer">
+
+        {{this.dataValues.name}}
+        <div id="direction">{{this.dataValues.direction}}</div>
+        its positions by {{this.dataValues.changeInPositions}}.
+        </br>
+        <div id="dates">
+            The most recent filing is dated {{this.dataValues.currentDate}}.
+            </br>
+            The previous filing is dated {{this.dataValues.pastDate}}.
+        </div>
+
+
+    </div>
+
+    <script src="/js/index.js"></script>
+    {{/each}}
+</div>
+
+<form action="/fund" method="get">
+    <button>Refresh Hedge Fund Information</button>
+</form>
