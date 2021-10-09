@@ -122,7 +122,7 @@ router.get("/fund", async (req, res) => {
   res.render("home", { fundData });
 });
 
-// cryptoApiKey : 'd4145b9e978f5aa3b7d4e2382749dea9'
+
 // var url = 'https://api.pro.coinbase.com/products/ETH-USD/ticker'
 
 
