@@ -3,6 +3,10 @@ const { queryApi } = require('sec-api');
 const axios = require('axios').default;
 const { Stock, User, Fund, Crypto } = require("../models");
 
+var stockApiKey = config.stockApiKey;
+var cryptoApiKey = config.cryptoApiKey;
+var secApiKey = config.secApiKey;
+
 router.get("/", (req, res) => {
   const { user } = req.session;
   res.render("login", { user });
@@ -13,10 +17,9 @@ router.get("/home", async (req, res) => {
   res.render("home", { user });
 });
 
-// stockApiKey : 'pk_0abdbf47054f49cc85cd2f764323dbc7',
 // var url = `https://cloud.iexapis.com/stable/stock/${symbol}/quote?token=${apiKey}`
 router.get("/stock", async (req, res) => {
-  const apiKey = 'pk_0abdbf47054f49cc85cd2f764323dbc7';
+  const apiKey = stockApiKey;
   const dbStockData = await Stock.findAll();
   for (let i = 0; i < dbStockData.length; i++) {
     console.log(dbStockData[i].dataValues.symbol, dbStockData[i].dataValues.price);
@@ -44,7 +47,7 @@ router.get("/stock", async (req, res) => {
 const fs = require('fs');
 
 router.get("/fund", async (req, res) => {
-  const secApiKey = '709dd422135e9cd660a9fab79ca45c499d744d2f00e73d4f0dd6c60f55e69457';
+
   var url = `https://api.sec-api.io?token=${secApiKey}`;
   queryApi.setApiKey(secApiKey);
 
