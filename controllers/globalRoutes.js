@@ -2,10 +2,13 @@ const router = require("express").Router();
 const { queryApi } = require('sec-api');
 const axios = require('axios').default;
 const { Stock, User, Fund, Crypto } = require("../models");
+const config = require("./config");
 
-var stockApiKey = config.stockApiKey;
-var cryptoApiKey = config.cryptoApiKey;
-var secApiKey = config.secApiKey;
+const stockApiKey = config.stockApiKey;
+// const cryptoApiKey = config.cryptoApiKey;
+const fundApiKey = config.secApiKey;
+console.log(fundApiKey)
+console.log(stockApiKey)
 
 router.get("/", (req, res) => {
   const { user } = req.session;
@@ -47,82 +50,86 @@ router.get("/stock", async (req, res) => {
 const fs = require('fs');
 
 router.get("/fund", async (req, res) => {
+  try {
+    queryApi.setApiKey(fundApiKey);
+    // var url = `https://api.sec-api.io?token=${secApiKey}`;
 
-  var url = `https://api.sec-api.io?token=${secApiKey}`;
-  queryApi.setApiKey(secApiKey);
+    const dbFundData = await Fund.findAll();
+    for (let i = 0; i < dbFundData.length; i++) {
 
-  const dbFundData = await Fund.findAll();
-  for (let i = 0; i < dbFundData.length; i++) {
-    
-    var cik = dbFundData[i].dataValues.cik;
-    const query = {
-      query: { query_string: { query: `cik:${cik} AND formType:'13F'` } }, // get most recent 13F filings
-      from: '0', // start with first filing. used for pagination.
-      size: '2', // limit response to 2 filings
-      sort: [{ filedAt: { order: 'desc' } }], // sort result by filedAt
-    };
-    const data = await queryApi.getFilings(query);
+      var cik = dbFundData[i].dataValues.cik;
+      const query = {
+        query: { query_string: { query: `cik:${cik} AND formType:'13F'` } }, // get most recent 13F filings
+        from: '0', // start with first filing. used for pagination.
+        size: '2', // limit response to 2 filings
+        sort: [{ filedAt: { order: 'desc' } }], // sort result by filedAt
+      };
+      const data = await queryApi.getFilings(query);
 
-    // const content = JSON.stringify(data.filings[0]);
+      // const content = JSON.stringify(data.filings[0]);
 
-    // fs.writeFile('./public/log.txt', content, err => {
-    //   if (err) {
-    //     console.error(err);
-    //     return;
-    //   }
-    // });
+      // fs.writeFile('./public/log.txt', content, err => {
+      //   if (err) {
+      //     console.error(err);
+      //     return;
+      //   }
+      // });
 
-    console.log(dbFundData[i].dataValues.cik);
-    console.log(data.filings[0].companyName);
-    if (!data.filings[0].ticker) {
-      
-    } else {
-      console.log(data.filings[0].ticker);
+      console.log(dbFundData[i].dataValues.cik);
+      console.log(data.filings[0].companyName);
+      if (!data.filings[0].ticker) {
+
+      } else {
+        console.log(data.filings[0].ticker);
+      }
+
+      console.log('Current ' + data.filings[0].holdings.length, data.filings[0].filedAt);
+      var str1 = data.filings[0].filedAt;
+      var currentArr = str1.split("T");
+      console.log(currentArr);
+      console.log('Past ' + data.filings[1].holdings.length, data.filings[1].filedAt);
+      var str2 = data.filings[1].filedAt;
+      var pastArr = str2.split("T");
+      console.log(pastArr);
+      console.log('Change in positions ', Math.abs(data.filings[0].holdings.length - data.filings[1].holdings.length));
+      console.log('Difference ', data.filings[0].holdings.length - data.filings[1].holdings.length);
+      if (data.filings[0].holdings.length - data.filings[1].holdings.length < 0) {
+        console.log('Decreased positions');
+        var tempString = 'decreased';
+      } else if (data.filings[0].holdings.length - data.filings[1].holdings.length > 0) {
+        console.log('Increased positions');
+        var tempString = 'increased';
+      } else {
+        console.log('No positional change, but share holdings may have changed.');
+        var tempString = "";
+      }
+      console.log('');
+      console.log('');
+
+      Fund.update(
+        {
+          name: data.filings[0].companyName,
+          symbol: data.filings[0].ticker,
+          currentPostionsTotal: data.filings[0].holdings.length,
+          currentDate: currentArr[0],
+          currentTime: currentArr[1],
+          pastPositionsTotal: data.filings[1].holdings.length,
+          pastDate: pastArr[0],
+          pastTime: pastArr[1],
+          changeInPositions: Math.abs(data.filings[0].holdings.length - data.filings[1].holdings.length),
+          direction: tempString
+        },
+        { where: { cik: dbFundData[i].dataValues.cik } }
+      );
+
+
     }
-    
-    console.log('Current ' + data.filings[0].holdings.length, data.filings[0].filedAt);
-    var str1 = data.filings[0].filedAt;
-    var currentArr = str1.split("T");
-    console.log(currentArr);
-    console.log('Past ' + data.filings[1].holdings.length, data.filings[1].filedAt);
-    var str2 = data.filings[1].filedAt;
-    var pastArr = str2.split("T");
-    console.log(pastArr);
-    console.log('Change in positions ', Math.abs(data.filings[0].holdings.length - data.filings[1].holdings.length));
-    console.log('Difference ', data.filings[0].holdings.length - data.filings[1].holdings.length);
-    if (data.filings[0].holdings.length - data.filings[1].holdings.length < 0) {
-      console.log('Decreased positions');
-      var tempString = 'decreased';
-    } else if(data.filings[0].holdings.length - data.filings[1].holdings.length > 0) {
-      console.log('Increased positions');
-      var tempString = 'increased';
-    } else {
-      console.log('No positional change, but share holdings may have changed.');
-      var tempString = "";
-    }
-    console.log('');
-    console.log('');
 
-    Fund.update(
-    { name: data.filings[0].companyName,
-      symbol: data.filings[0].ticker,
-      currentPostionsTotal: data.filings[0].holdings.length,
-      currentDate: currentArr[0],
-      currentTime: currentArr[1],
-      pastPositionsTotal: data.filings[1].holdings.length,
-      pastDate: pastArr[0],
-      pastTime: pastArr[1],
-      changeInPositions: Math.abs(data.filings[0].holdings.length - data.filings[1].holdings.length),
-      direction: tempString },
-    { where: { cik: dbFundData[i].dataValues.cik } }
-    );
+    const fundData = await Fund.findAll();
 
-    
-  }
+    res.render("home", { fundData });
+  } catch (e) { console.error(e) }
 
-  const fundData = await Fund.findAll();
-
-  res.render("home", { fundData });
 });
 
 
@@ -138,7 +145,7 @@ router.get("/crypto", async (req, res) => {
     console.log(dbCryptoData[i].dataValues.symbol);
     var url1 = `https://api.pro.coinbase.com/products/${dbCryptoData[i].dataValues.symbol}-USD/candles`;
     var url2 = `https://api.pro.coinbase.com/products/${dbCryptoData[i].dataValues.symbol}-USD/ticker`;
-    
+
     // console.log(url);
     await axios.get(url1)
       .then(function (response) {
@@ -150,16 +157,16 @@ router.get("/crypto", async (req, res) => {
       .then(function () { });
 
     await axios.get(url2)
-    .then(function (response) {
-      console.log(response.data.price);
-      Crypto.update(
-      { price: response.data.price }
-      ,{ where: { symbol: dbCryptoData[i].dataValues.symbol } });
-    })
-    .catch(function (e) {
-      console.error(e);
-    })
-    .then(function () {});
+      .then(function (response) {
+        console.log(response.data.price);
+        Crypto.update(
+          { price: response.data.price }
+          , { where: { symbol: dbCryptoData[i].dataValues.symbol } });
+      })
+      .catch(function (e) {
+        console.error(e);
+      })
+      .then(function () { });
 
   }
   const dbCryptoDataFinal = await Crypto.findAll();
